@@ -13,6 +13,7 @@ public class Manager : MonoBehaviour {
 
 	public float alignWeight = 0.75f;
 	public float cohereWeight = 0.5f;
+	public float separateWeight = 0.5f;
 
 	// Use this for initialization
 	void Start () {
@@ -23,27 +24,45 @@ public class Manager : MonoBehaviour {
 	void createFlock() {
 		if (roverPrefab) {
 			for (int i = 0; i < flockSize; i++) {
-//				Vector3 pos = new Vector3(Random.Range (-20f, 20f), 0, Random.Range (-20f, 20f));
-//				GameObject member = Instantiate (roverPrefab, pos, Quaternion.identity);
-//				Rover rover = member.GetComponent<Rover> ();
-//				rover.velocity = new Vector3 (Random.Range (-3f, 3f), 0, Random.Range (-3f, 3f));
-//				rover.SetManager (this);
-//				flock.Add (rover);
+				Vector3 pos = new Vector3(Random.Range (-20f, 20f), 0, Random.Range (-20f, 20f));
+				GameObject member = Instantiate (roverPrefab, pos, Quaternion.identity);
+				Rover rover = member.GetComponent<Rover> ();
+				rover.velocity = new Vector3 (Random.Range (-3f, 3f), 0, Random.Range (-3f, 3f));
+				rover.SetManager (this);
+				flock.Add (rover);
 			}
 		}
+	}
+
+	public Vector3 findNearestNeighborPos(Rover r) {
+		float closestSq = float.MaxValue;
+		Vector3 closestPos = Vector3.zero;
+
+		for (int i = 0; i < flock.Count; i++) {
+			if (flock [i] != r) {
+				Vector3 offset = r.transform.position - flock [i].transform.position;
+				float distSq = offset.sqrMagnitude;
+				if (distSq < closestSq) {
+					closestSq = distSq;
+					closestPos = flock [i].transform.position;
+				}
+			}
+		}
+
+		return closestPos;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-//		flockHeading = Vector3.zero;
-//		Vector3 flockPos = Vector3.zero;
-//
-//		for (int i = 0; i < flock.Count; i++) {
-//			flockHeading += flock [i].velocity;
-//			flockPos += flock [i].transform.position;
-//		}
-//
-//		flockHeading.Normalize ();
-//		averagePos = flockPos / flock.Count;
+		flockHeading = Vector3.zero;
+		Vector3 flockPos = Vector3.zero;
+
+		for (int i = 0; i < flock.Count; i++) {
+			flockHeading += flock [i].velocity;
+			flockPos += flock [i].transform.position;
+		}
+
+		flockHeading.Normalize ();
+		averagePos = flockPos / flock.Count;
 	}
 }

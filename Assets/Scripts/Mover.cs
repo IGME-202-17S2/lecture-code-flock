@@ -32,8 +32,11 @@ public abstract class Mover : MonoBehaviour {
 	}
 		
 	protected Vector3 Flee(Vector3 targetPos) {
-		// not yet implemented
-		return Vector3.zero;
+		Vector3 fleeDirection = this.transform.position - targetPos;
+		Vector3 desiredVelocity = fleeDirection.normalized * maxSpeed;
+		Vector3 steeringForce = desiredVelocity - velocity;
+
+		return VectorHelper.Clamp (steeringForce, maxTurn);
 	}
 		
 	protected Vector3 Arrive(Vector3 targetPos, float threshold, float radii) {
@@ -72,16 +75,18 @@ public abstract class Mover : MonoBehaviour {
 
 	public Vector3 Align(Vector3 heading) {
 
-//		Vector3 desiredVelocity = heading * maxSpeed;
-//		Vector3 steeringForce = desiredVelocity - velocity;
+		Vector3 desiredVelocity = heading * maxSpeed;
+		Vector3 steeringForce = desiredVelocity - velocity;
 
-//		return VectorHelper.Clamp(steeringForce, maxTurn);
-		return Vector3.zero;
+		return VectorHelper.Clamp(steeringForce, maxTurn);
 	}
 
 	public Vector3 Cohere(Vector3 targetPos) {
-//		return Seek(targetPos);
-		return Vector3.zero;
+		return Seek(targetPos);
+	}
+
+	public Vector3 Separate(Vector3 targetPos) {
+		return Flee (targetPos);
 	}
 		
 	void LateUpdate () {
